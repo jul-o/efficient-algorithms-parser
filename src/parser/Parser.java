@@ -92,6 +92,7 @@ public class Parser {
 
             for (int i = 1; i < n; ++i) {
                 for (int j = 0; j < n - i; ++j) {
+                    ++this.counter;
                     // System.out.println("i:"+i+"j:"+j);
                     int index = 0;
                     Character[][][] terminalNonterminalRules = castedGrammar.getTerminalNonterminalRules();
@@ -100,7 +101,6 @@ public class Parser {
                     for (int a = 0; a < nonterminals.length; ++a) {
                         // for each nonterminal in P[i-1][j+1]
                         for (int b = 0; b < nonterminals.length; ++b) {
-                            ++this.counter;
                             // iterate over rules of form A -> this.inputArray[j],P[i-1][j+1], add A to P[i][j]
                             if (P[i-1][j+1][b]) {
                                 for(char c : terminalNonterminalRules[a][b]) {
@@ -108,7 +108,7 @@ public class Parser {
                                         // System.out.println(Arrays.toString(P[i-1][j+1]) + ", " + this.inputArray[i]);
                                     }
                                     if (c == this.inputArray[j]) {
-                                        System.out.println(a + " -> " + c+b);
+                                        // System.out.println(a + " -> " + c+b);
                                         P[i][j][a] = true;
                                     }
                                 }
@@ -117,7 +117,7 @@ public class Parser {
                             if (P[i-1][j][b]) {
                                 for (char c : nonterminalTerminalRules[a][b]) {
                                     if (c == this.inputArray[i+j]) {
-                                        System.out.println(a + " -> " + b+c);
+                                        // System.out.println(a + " -> " + b+c);
                                         P[i][j][a] = true;
                                     }
                                 }

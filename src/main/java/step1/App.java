@@ -14,8 +14,9 @@ public class App {
     public static void main(String[] args) throws Exception {
         Parser p = null;
         String outputPath = null;
-        List<String> testInputs = new ArrayList<>();
+        List < String > testInputs = new ArrayList < > ();
         Integer naiveIterations = null;
+        // used to compare linear grammar algorithms
         ChomskyGrammar chomskyGrammar = null;
         LinearGrammar linearGrammar = null;
 
@@ -23,7 +24,7 @@ public class App {
         boolean forceChomsky = false;
         boolean helpAsked = false;
         // if help page is asked, do no other actions
-        for(String s : args) {
+        for (String s: args) {
             if (s.equals("-h")) {
                 helpAsked = true;
                 System.out.println("##########################################");
@@ -43,77 +44,79 @@ public class App {
 
         if (!helpAsked) {
             for (int i = 0; i < args.length; ++i) {
-                switch(args[i]) {
-                case "-l":
-                    linear = true;
-                    break;
+                switch (args[i]) {
+                    case "-l":
+                        linear = true;
+                        break;
 
-                case "-c":
-                    forceChomsky = true;
-                    break;
+                        // case "-c":
+                        //     forceChomsky = true;
+                        //     break;
 
-                case "-g":
-                    if(args.length >= i + 2) {
-                        String grammarPath = args[i+1];
-                        AbstractGrammar g;
-                        if (!linear) {
-                            g = new ChomskyGrammar(grammarPath);
-                        } else {
-                            if (forceChomsky) {
-                                g = ChomskyGrammar.fromLinearGrammarFile(grammarPath);
+                    case "-g":
+                        if (args.length >= i + 2) {
+                            String grammarPath = args[i + 1];
+                            AbstractGrammar g;
+                            if (!linear) {
+                                g = new ChomskyGrammar(grammarPath);
                             } else {
-                                g = new LinearGrammar(grammarPath);
+                                chomskyGrammar = ChomskyGrammar.fromLinearGrammarFile(grammarPath);
+                                linearGrammar = new LinearGrammar(grammarPath);
+                                // if (forceChomsky) {
+                                // g = ChomskyGrammar.fromLinearGrammarFile(grammarPath);
+                                // } else {
+                                //     g = new LinearGrammar(grammarPath);
+                                // }
                             }
+                            p = new Parser(chomskyGrammar);
+                        } else {
+                            throw new Exception("No grammar file specified after \"-g\"");
                         }
-                        p = new Parser(g);
-                    } else {
-                        throw new Exception("No grammar file specified after \"-g\"");
-                    }
-                    break;
+                        break;
 
-                case "-i":
-                    if(args.length >= i + 2) {
-                        File testInputsFile = new File(args[i+1]);
-                        Scanner testInputsReader = new Scanner(testInputsFile);
+                    case "-i":
+                        if (args.length >= i + 2) {
+                            File testInputsFile = new File(args[i + 1]);
+                            Scanner testInputsReader = new Scanner(testInputsFile);
 
-                        while (testInputsReader.hasNextLine()) {
-                            testInputs.add(testInputsReader.nextLine());
+                            while (testInputsReader.hasNextLine()) {
+                                testInputs.add(testInputsReader.nextLine());
+                            }
+                        } else {
+                            throw new Exception("No input strings list file specified after \"-i\"");
                         }
-                    } else {
-                        throw new Exception("No input strings list file specified after \"-i\"");
-                    }
-                    break;
+                        break;
 
-                case "-o":
-                    if(args.length >= i + 2) {
-                        outputPath = args[i+1];
-                    } else {
-                        throw new Exception("No output file specified after \"-o\"");
-                    }
-                    break;
+                    case "-o":
+                        if (args.length >= i + 2) {
+                            outputPath = args[i + 1];
+                        } else {
+                            throw new Exception("No output file specified after \"-o\"");
+                        }
+                        break;
 
-                // case "-e":
-                //     if (args.length >= i + 2) {
-                //         switch(args[i+1]) {
-                //         case "As":
-                //             if (args.length >= i + 4) {
+                        // case "-e":
+                        //     if (args.length >= i + 2) {
+                        //         switch(args[i+1]) {
+                        //         case "As":
+                        //             if (args.length >= i + 4) {
 
-                //             } else {
-                //                 throw new Exception("not enough arguments for enumeration")
-                //             }
+                        //             } else {
+                        //                 throw new Exception("not enough arguments for enumeration")
+                        //             }
 
-                //         }
-                //     } else {
-                //         throw new Exception("No input enumeration specified after \"-e\"");
-                //     }
+                        //         }
+                        //     } else {
+                        //         throw new Exception("No input enumeration specified after \"-e\"");
+                        //     }
 
-                // }
-                case "-n":
-                    if(args.length >= i+2) {
-                        naiveIterations = Integer.valueOf(args[i+1]);
-                    } else {
-                        throw new Exception("No number of naive iterations specified after \"-n\"");
-                    }
+                        // }
+                    case "-n":
+                        if (args.length >= i + 2) {
+                            naiveIterations = Integer.valueOf(args[i + 1]);
+                        } else {
+                            throw new Exception("No number of naive iterations specified after \"-n\"");
+                        }
                 }
             }
 
@@ -121,31 +124,66 @@ public class App {
                 if (!linear) {
                     App.test(p, testInputs, outputPath, naiveIterations);
                 } else {
-                    App.linearComparison(p, testInputs, outputPath);
+                    App.linearComparison(p, testInputs, outputPath, chomskyGrammar, linearGrammar);
                 }
             }
         }
-
-
-        // System.out.println("##########################################");
-        // System.out.println("STUPID GRAMMAR");
-        // System.out.println("##########################################\n");
-        // testStupid();
-        // System.out.println("##########################################");
-        // System.out.println("PARENTHESES");
-        // System.out.println("##########################################\n");
-        // testParentheses();
-        // // to test your own grammar with your own inputs, comment the above lines, and uncomment the lines below
-    //     String inputFile = "path to your grammar";
-    //     ChomskyGrammar g = new ChomskyGrammar(inputFile);
-    //     Parser p = new Parser(g);
-    //     String[] testedInputs = new String[] { "Tested", "inputs", "go", "here" };
-    //     for (String s : testedInputs) {
-    //         App.testInput(s, p);
-    //     }
     }
 
-    static void test(Parser p, List<String> testedInputs, String outputPath, Integer naiveIterations) {
+    static void linearComparison(Parser p, List < String > testedInputs, String outputPath, ChomskyGrammar chomskyGrammar, LinearGrammar linearGrammar) {
+        long startingTime;
+        long endingTime;
+        long[] chomskyTime = new long[testedInputs.size()];
+        int[] chomskyCounter = new int[testedInputs.size()];
+        long[] linearTime = new long[testedInputs.size()];
+        int[] linearCounter = new int[testedInputs.size()];
+        String s;
+        boolean result;
+
+        for (int i = 0; i < testedInputs.size(); ++i) {
+            s = testedInputs.get(i);
+
+            p.setGrammar(chomskyGrammar);
+            startingTime = System.nanoTime();
+            result = p.parseBU(s);
+            endingTime = System.nanoTime();
+            chomskyTime[i] = endingTime - startingTime;
+            chomskyCounter[i] = p.getCounter();
+
+            p.setGrammar(linearGrammar);
+            startingTime = System.nanoTime();
+            p.parseBU(s);
+            endingTime = System.nanoTime();
+            linearTime[i] = endingTime - startingTime;
+            linearCounter[i] = p.getCounter();
+
+            System.out.println("\"" + s + "\" is" + (result ? "" : " NOT") + " part of the grammar");
+            System.out.println("Measured parsing complexity with the Chomsky grammar: " + chomskyCounter[i]);
+            System.out.println("Measured parsing complexity with the linear grammar: " + linearCounter[i]);
+            System.out.println("O(n^3) = " + Math.pow(s.length(), 3));
+            System.out.println("O(n^2) = " + Math.pow(s.length(), 2));
+            System.out.println();
+        }
+
+        if (outputPath != null) {
+            String output = "Input string,String size,n^2,n^3,Chomsky,linear";
+            for (int i = 0; i < testedInputs.size(); ++i) {
+                output += "\n" + testedInputs.get(i) + "," + testedInputs.get(i).length() + "," + Math.pow(testedInputs.get(i).length(), 2) + "," + Math.pow(testedInputs.get(i).length(), 3)+ "," + chomskyCounter[i] + "," + linearCounter[i];
+            }
+
+            try {
+                // create output dir if it doesn't exist
+                new File("csv").mkdirs();
+                PrintWriter prw = new PrintWriter("csv/" + outputPath);
+                prw.print(output);
+                prw.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    static void test(Parser p, List < String > testedInputs, String outputPath, Integer naiveIterations) {
         int size = testedInputs.size();
         int[] stringSizes = new int[size];
         Long[] naiveCounter = new Long[size];
@@ -167,7 +205,7 @@ public class App {
             TDTimes[i] = res[5];
         }
 
-        if(outputPath != null) {
+        if (outputPath != null) {
             App.exportCSV(stringSizes, naiveCounter, BUCounter, TDCounter, naiveTimes, BUTimes, TDTimes, outputPath, testedInputs);
         }
     }
@@ -256,7 +294,7 @@ public class App {
         }
 
         int i = 0;
-        while(aEnum.hasMoreElements()) {
+        while (aEnum.hasMoreElements()) {
             String testedInput = aEnum.nextElement();
             Long[] res = App.testInput(testedInput, p, false);
             naiveCounter[i] = res[0];
@@ -270,12 +308,12 @@ public class App {
         // App.exportCSV(stringSizes, naiveCounter, BUCounter, TDCounter, naiveTimes, BUTimes, TDTimes, "stupid.csv");
     }
 
-    static void exportCSV(int[] stringSizes, Long[] naiveCounter, long[] BUCounter, long[] TDCounter, Long[] naiveTimes, Long[] BUTimes, Long[] TDTimes, String name, List<String> inputs) {
+    static void exportCSV(int[] stringSizes, Long[] naiveCounter, long[] BUCounter, long[] TDCounter, Long[] naiveTimes, Long[] BUTimes, Long[] TDTimes, String name, List < String > inputs) {
         // String output = "String size," + (naiveCounter != null ? "Naive," : "") + "Bottom-up,Top-down";
         String output = "Input string,String size,O(n^3),Naive,Bottom-up,Top-down,,Naive time,Bottom-up time,Top-down time";
 
-        for(int i = 0; i < stringSizes.length; ++i) {
-            output += "\n" + inputs.get(i) + "," + stringSizes[i] + "," + Math.pow(stringSizes[i], 3)+ "," + (naiveCounter != null && naiveCounter[i] != null ? naiveCounter[i]  : "") + "," + BUCounter[i] + "," + TDCounter[i] + ",," + (naiveTimes[i] != null ? naiveTimes[i] :  "") + "," + (BUTimes[i] != null ? BUTimes[i] :  "") + "," + (TDTimes[i] != null ? TDTimes[i] :  "");
+        for (int i = 0; i < stringSizes.length; ++i) {
+            output += "\n" + inputs.get(i) + "," + stringSizes[i] + "," + Math.pow(stringSizes[i], 3) + "," + (naiveCounter != null && naiveCounter[i] != null ? naiveCounter[i] : "") + "," + BUCounter[i] + "," + TDCounter[i] + ",," + (naiveTimes[i] != null ? naiveTimes[i] : "") + "," + (BUTimes[i] != null ? BUTimes[i] : "") + "," + (TDTimes[i] != null ? TDTimes[i] : "");
         }
 
         try {
@@ -326,7 +364,7 @@ public class App {
         int TDCounter = p.getCounter();
         long TDTime = endingTime - startingTime;
 
-        System.out.println("\"" + testedInput + "\" is " + (result ? "" : "NOT") + " part of the grammar");
+        System.out.println("\"" + testedInput + "\" is" + (result ? "" : " NOT") + " part of the grammar");
         if (parseNaive) {
             System.out.println("Measured parsing complexity with the naive algorithm: " + naiveCounter);
         }
@@ -337,6 +375,13 @@ public class App {
 
         System.out.println();
 
-        return new Long[] { naiveCounter, new Long(BUCounter), new Long(TDCounter),  naiveTime, BUTime, TDTime };
+        return new Long[] {
+            naiveCounter,
+            new Long(BUCounter),
+            new Long(TDCounter),
+            naiveTime,
+            BUTime,
+            TDTime
+        };
     }
 }
