@@ -1,0 +1,8 @@
+Input string,String size,n^2,n^3,Chomsky,linear
+b,1,1.0,1.0,0,0
+c,1,1.0,1.0,0,0
+abc,3,9.0,27.0,4,3
+aabcc,5,25.0,125.0,20,10
+aaaabcccc,9,81.0,729.0,120,36
+aaaaaaaabcccccccc,17,289.0,4913.0,816,136
+aaaaaaaabcbccccccc,18,324.0,5832.0,969,153
