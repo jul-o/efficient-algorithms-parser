@@ -18,6 +18,7 @@ e.
  
 - The algorithm presentations are very good.
  The only comment I have here is that I think that doing the alpha[i][j] thing implies that we have to make copies of the string.
+
  Argumentation and analysis 
 - The analysis is rather thin.
  What results are you expecting for the various grammars? What results do you get? Do the results align with the theoretical expectations? What are the cases for which td and bu differ? 
